@@ -1,4 +1,8 @@
 extends ../layouts/main-layout
 
 block content
-    h2 đây là content
+    form(action="") 
+        .mb-3.mt-4  
+            label.form-label(for="exampleFormControlInput") example text area
+            input#exampleFormControlInput.form-control(type="text", name="user",placeholder="abc")
+            button.btn.btn-primary(type="submit") submit
