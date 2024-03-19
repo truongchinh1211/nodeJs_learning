@@ -24,7 +24,7 @@ app.use(morgan('combined'));
 
 //configuration for view engine
 app.set('view engine','pug');
-app.set('views', path.join(__dirname, 'resources/views'));
+app.set('views', path.join(__dirname, 'src/resources/views'));
 
 //route init
 route(app);

@@ -1,9 +1,10 @@
 const newRouter = require('./new');
-const siteRouter = require('./site');
 
 function route(app){
-    app.get('/trang-chu', siteRouter);
-    app.get('/new',newRouter);
+    app.use('/trang-chu', require('./site'));
+    app.use('/new',newRouter);
+    app.use('/product',require('./productRoute'))
+    app.use('/category',require('./categoryRoute'))
 }
 
 module.exports= route;

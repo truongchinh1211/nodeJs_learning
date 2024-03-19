@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const siteController = require('../app/controller/SiteController');
+const { siteController } = require('../controllers');
 
 
-router.use('/trang-chu',siteController.index);
+router.get('/',siteController.render);
 
 module.exports=router;
