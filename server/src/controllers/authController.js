@@ -51,3 +51,32 @@ exports.login = async(req,res) => {
         return res.status(500).json({ error: "Internal Server Error" });
     }
 }
+
+
+exports.getRoles = async(req,res)=>{
+    try{
+        const roles = await Role.find()
+        return res.status(200).json({
+            message: "get success",
+            roles: roles,
+        })
+    }catch(error){
+        return res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+exports.createRole = async(req,res)=>{
+    try{
+        const { roleName } = req?.body
+        if(!roleName)
+            return res.status(400).json("Please fill all the required field!")
+        const createRole = await Role.create({ roleName })
+        return res.status(200).json({
+            message: "created role successfully",
+            data: createRole
+        })
+    }catch(error){
+        if (error.code === 11000) 
+            return res.status(409).json({ message: "Role already exists" })
+        return res.status(500).json({ error: error });
+    }
+}
