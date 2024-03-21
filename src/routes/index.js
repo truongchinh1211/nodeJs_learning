@@ -5,6 +5,7 @@ function route(app){
     app.use('/new',newRouter);
     app.use('/product',require('./productRoute'))
     app.use('/category',require('./categoryRoute'))
+    app.use(('/auth'),require('./authorizationRoute'))
 }
 
 module.exports= route;

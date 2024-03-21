@@ -1,4 +1,5 @@
 module.exports = {
     Category: require('./category'),
-    Product : require('./product')
+    Product : require('./product'),
+    ...require('./authorization')
 }
