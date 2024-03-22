@@ -8,7 +8,7 @@ const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const app = express()
 
-
+app.use(cookieParser());
 //handle form-data or jason
 app.use(express.urlencoded({
   extended:true
@@ -25,6 +25,7 @@ app.use(morgan('combined'));
 //configuration for view engine
 app.set('view engine','pug');
 app.set('views', path.join(__dirname, 'src/resources/views'));
+
 
 //route init
 route(app);
