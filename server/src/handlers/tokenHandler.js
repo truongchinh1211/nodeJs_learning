@@ -3,6 +3,7 @@ const { User } = require("../models");
 
 const tokenDecode = req => {
     const bearerHeader = req.headers["authorization"];
+    console.log(bearerHeader)
     if (bearerHeader) {
       const bearer = bearerHeader.split(" ")[1];
       try {
@@ -19,6 +20,7 @@ exports.verifyToken = async (req, res, next) => {
     if (tokenDecoded) {
       if(Date.now() >= tokenDecoded.exp*1000)
         return res.status(401).json("token has expired, please login again")
+      console.log(tokenDecoded.id)
       const user = await User.findById(tokenDecoded.id);
       if (!user) 
         return res.status(403).json("Unathorized");

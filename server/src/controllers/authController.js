@@ -4,12 +4,20 @@ const jwt = require("jsonwebtoken");
 exports.register = async(req,res)=>{
     try{
         const {fullName, userName, password, email,roleId} = req?.body
-        if(!fullName || !userName || !password || !email || !roleId)
+        if(!fullName || !userName || !password || !email)
             return res.status(400).json("Please fill all the required field!")
-        const role = await Role.findById(roleId)
+        let role = undefined
+        if(roleId)
+             role = await Role.findById(roleId)
+        else
+            role = await Role.findOne({ roleName:'User' })
         if(!role)
             return res.status(400).json("Invalid role Id")
-        const createdUser = await User.create({ userName, password, email, role: roleId})
+        const user = await User.findOne({userName})
+        if(user)
+            return res.status(400).json("username exist" )
+        console.log(role._id)
+        const createdUser = await User.create({fullName,userName, password, email, role: role._id})
         return res.status(200).json({
             message: 'create user successfully',
             data: {
@@ -17,7 +25,7 @@ exports.register = async(req,res)=>{
             }
         })
     }catch(error){
-        return res.status(500).json({ error: "Internal Server Error" });
+        return res.status(500).json('Internal Server Errors');
     }
 }
 
@@ -36,8 +44,7 @@ exports.login = async(req,res) => {
             {
                 id: user._id,
             },
-            process.env.TOKEN_SECRET_KEY,
-            { expiresIn: '1h'}
+            process.env.TOKEN_SECRET_KEY
             )
         user.password = undefined
         return res.status(200).json({
@@ -77,6 +84,46 @@ exports.createRole = async(req,res)=>{
     }catch(error){
         if (error.code === 11000) 
             return res.status(409).json({ message: "Role already exists" })
+        return res.status(500).json({ error: error });
+    }
+}
+exports.getUserInfo = async(req,res)=>{
+    try{
+        const user = req.user
+        user.password = undefined
+        return res.status(200).json(user)
+    }catch(error){
+        return res.status(500).json({ error: error });
+    }
+}
+exports.getUsers= async(req,res)=>{
+    try{
+        const users = await User.find()
+        return res.status(200).json(users)
+    }catch(error){
+        return res.status(500).json({ error: error });
+    }
+}
+exports.updateUserInfo = async(req,res)=>{
+    try{
+        const user = req.user
+        const {userName, email,fullName} = req.body
+        if(!fullName || !userName || !email)
+            return res.status(400).json("Please fill all the required field!")
+            const updatedField = {
+                ...(fullName !== user.fullName ? { fullName: fullName } : {}),
+                ...(userName !== user.userName ? { userName: userName } : {}),
+                ...(email !== user.email ? { email: email } : {}),
+            };
+        const updateUser = await User.findOneAndUpdate({ _id: user._id },updatedField,{new:true}) 
+            return res.status(200).json({
+                message: "update successfully",
+                data:updateUser
+            })
+    }catch(error){
+        if (error.code === 11000) {
+            return res.status(400).json("username or email you wanna change has already exist");
+        }
         return res.status(500).json({ error: error });
     }
 }

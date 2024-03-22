@@ -1,0 +1,219 @@
+
+/* for mobile and tablet */
+@media (max-width: 1023px) {
+    .hide_on_table-mobile {
+        display: none;
+   }
+   .app_header {
+        height: var(--header_search-height);  /* when tablet and mobile, only pc's header search left in the header, so... */
+        position: fixed;
+        top: 0;
+        z-index: 100;
+    }
+    .app_container {
+        margin-top: calc(var(--header_search-height) + 34px);
+        padding: 0;
+    }
+    .Slides-content{
+        margin-top: calc(var(--header_search-height) + 34px);
+        width: 100%;
+    }
+    .product_mobile-filter {
+        position: fixed;
+        top: var(--header_search-height);
+        width: 100%;
+        z-index: 10;
+    }
+    .header_search {
+        justify-content: space-between;
+    }
+    .header_searchbar {
+        position: fixed;
+        top: var(--header_search-height);
+        left: 4px;
+        right: 4px;
+        box-shadow: -1px 2px 3px rgba(0, 0, 0, 0.2);
+        /* border: 1px solid rgba(0 0, 0, 0.9); */
+        transition: height linear 0.2s, opacity linear 0.1s;
+    }
+    .header_searchbar-hide {
+        height: 0;
+        opacity: 0;
+    }
+    .header_cart {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }  
+    .mobile_header-searchBtn {
+        display: unset;  /*display: to default (flex- items)*/
+    }
+    .mobile_hambuger-list {
+        display: unset;
+    }
+    .buy_product-img {
+        width: 80px;
+        height: 80px;
+    }
+    .buy_product-list {
+        max-height: 310px;
+    }
+    .orderNote_container {
+        width: 100%;
+    }
+    .img-footer{
+        display: none;
+    }
+}
+
+/* for mobile */
+@media (max-width: 739px) {
+    .hide_on_mobile {
+        display: none;
+    }
+    .app_content {
+        margin: 0 4px 0 4px;    /* de 2 ben canh le 4px thay vi sat vien man hinh nhu trong grid-lib da config */
+    }                           /* chi ap dung cho row lon nhat vi neu ap cho class chung grid_row se lam ca 2 row deu co cung 
+                                    css margin 4px => row ben trong thut vo them 4px so voi row ben ngoai=> ko can doi */
+    
+    .mobile_searchbar-input {
+        width: 90%;
+    }
+    .mobile_search-button {
+        width: 10%;
+    }
+    .cart_box {
+        position: fixed;
+        top: var(--header_search-height);
+        width: unset;
+        left: 0;
+        right: 0;
+    }
+    .cart_box::before {
+        display: none;
+    }
+    .cart_list {
+        max-height: 256px;
+    }
+    .cart_items-img {
+        width: 80px;
+        height: 80px;
+    }
+    .form-contain {
+        width: 80%;
+    }
+    .confirmBuy_form-contain {
+        width: 100%;
+        height: 100%;
+        flex-direction: column-reverse;
+    }
+    .confirmBuy_form-info {
+        border-right: none;
+        width: 100%;
+        /* border-bottom: 2px solid var(--theme-color); */
+    }
+    .buy_products-section {
+        padding-top: 0;
+        border-bottom: 2px solid var(--theme-color);
+    }
+    .confirmBuy_form-closebtn {
+        top: 2px;
+        right: 8px;
+    }
+    .orderNote_overView {
+        height: 90px;
+        column-gap: 8px;
+    }
+    .orderNote_overView>i {
+        display: none;
+    }
+    .orderNote_viewDetails>span {
+        display: none;
+    }
+    .informations-footer{
+        width: 100%;
+        text-align: center;
+        border-left: none;
+        border-bottom: 1px solid black;
+    }
+    .map-footer{
+        border-left: none;
+        padding: 20px 0 20px 0;
+    }
+
+    .informations-footer p{
+        padding-left: 0;
+    }
+    .informations-footer a{
+        padding-left: 0;
+    }
+
+    .main-footer-content {
+        color: black;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: center;
+        padding-top: 20px;
+        justify-content: center;
+    }
+}
+
+/* for tablet */
+@media (min-width: 740px) and (max-width: 1023px) {
+    .hide_on_tablet {
+        display: none;
+    }
+    .hambugerlist_modal-content {
+        width: 50%;
+    }
+    .form-contain {
+        width: 40%;
+    }
+    .confirmBuy_form-contain {
+        width: 85%;
+    }
+    .informations-footer{
+        width: 50%;
+    }
+    .pay-footer img{
+        width: 100px;
+    }
+    .pay-footer{
+        width: 50%;
+    }
+    .main-footer-content {
+        color: black;
+        display: flex;
+        flex-wrap: wrap;
+        align-content: center;
+        padding-top: 20px;
+        justify-content: flex-start;
+    }
+}
+
+/* for laptop L */
+@media (min-width: 1024px) and (max-width: 1340px) {
+    .hide_on_pc {
+        display: none;
+    }
+    .main-footer-content{
+        justify-content: flex-start;
+    }
+    .img-footer{
+        width: 30%;
+        border-left: 1px solid black;
+    }
+    .informations-footer{
+        width: 30%;
+    }
+    .map-footer{
+        width: 25%;
+    }
+}
+
+/* for pc and up */
+@media (min-width: 1024px) {
+    .hide_on_pc {
+        display: none;
+    }
+}

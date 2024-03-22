@@ -1,0 +1,282 @@
+/* Set gray background color and 100% height */
+
+.sidenav {
+    background-color: #f1f1f1;
+    height: 100%;
+}
+
+.tab_hide {
+    display: none !important;
+}
+
+.form-messege {
+    color: red;
+    font-size: 12px;
+}
+
+/* ========================================= */
+
+
+/* -------------- CATEGORY TAB ------------- */
+
+
+/* ========================================= */
+
+.category_delelte_btn,
+.category_update_btn {
+    font-size: 1.8rem;
+}
+
+.category_delelte_btn:hover,
+.category_update_btn:hover {
+    cursor: pointer;
+    color: var(--theme-color);
+}
+
+.category_modal {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    display: flex;
+}
+
+
+/* .category_modal_hide {
+    display: none;
+} */
+
+.category_modal_form {
+    margin: auto;
+    background-color: var(--white-color);
+    width: 320px;
+    font-size: 1.8rem;
+    color: var(--text-color);
+    padding: 20px;
+    border-radius: 5px;
+}
+
+
+/* =============================================== */
+
+
+/* ----------------- PRODUCT TAB ----------------- */
+
+
+/* =============================================== */
+
+
+.product_bgImg {
+    aspect-ratio: 1;
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 75px;
+    margin: 0;
+}
+
+.product_modal_hide {
+    display: none;
+}
+
+#img_review {
+    width: 275px;
+    height: 200px;
+    border: 1px solid black;
+    background-size: 275px 200px;
+    background-repeat: no-repeat;
+}
+
+.product_delete_btn,
+.product_update_btn,
+.variantAttribute_del_btn,
+.attributeValue_del_btn {
+    font-size: 1.8rem;
+    cursor: pointer;
+}
+
+
+/* ================================================ */
+
+
+/* ---------------- ORDER NOTE TAB ---------------- */
+
+
+/* ================================================ */
+
+.orderNote_product_img {
+    aspect-ratio: 1;
+    width: 100px;
+    height: 100px;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+
+.background_red {
+    background-color: rgba(245, 64, 45, 0.6);
+    color: var(--white-color);
+}
+
+.background_blue {
+    background-color: #69C9BC;
+    color: var(--white-color);
+}
+.orderNote_list {
+    max-height: 200px;
+    overflow-y: scroll;
+}
+
+
+/* ============================ */
+
+
+/* ------- Account tab ------- */
+
+
+/* =========================== */
+
+.accountInfo_detail>span {
+    text-decoration: underline;
+}
+
+.accountInfo_detail>span:hover {
+    cursor: pointer;
+    color: var(--theme-color);
+}
+
+.account_delete_btn,
+.account_update_btn {
+    font-size: 1.8rem;
+}
+
+.account_delete_btn:hover,
+.account_update_btn:hover {
+    cursor: pointer;
+    color: var(--theme-color);
+}
+
+.account_modal_hide {
+    display: none;
+}
+
+#account_type_selection {
+    height: 35px;
+}
+
+/* ====== CUSTOM ======== */
+
+.background-grey {
+    background-color: #a7a5a5 !important;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 36px;
+    height: 20px;
+  }
+  
+  /* Hide default HTML checkbox */
+  .switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  /* The slider */
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+  }
+  
+  input:checked + .slider {
+    background-color: #2196F3;
+  }
+  
+  input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+  }
+  
+  input:checked + .slider:before {
+    -webkit-transform: translateX(16px);
+    -ms-transform: translateX(16px);
+    transform: translateX(16px);
+  }
+  
+  /* Rounded sliders */
+  .slider.round {
+    border-radius: 34px;
+  }
+  
+  .slider.round:before {
+    border-radius: 50%;
+  }
+
+/* ========================== */
+
+
+/* ------ REPORT TAB -------- */
+
+
+/* ========================== */
+
+
+/* ========================================= */
+
+
+/* -------------- ATTRIBUTE TAB ------------- */
+
+
+/* ========================================= */
+/* 
+.attribute_delete_btn,
+.attribute_update_btn {
+    font-size: 1.8rem;
+}
+
+.attribute_delete_btn:hover,
+.attribute_update_btn:hover {
+    cursor: pointer;
+    font-size: 2.1rem;
+    color: var(--theme-color);
+}
+
+.attribute_modal {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    z-index: 1000;
+    display: flex;
+}
+
+.attribute_modal_form {
+    margin: auto;
+    background-color: var(--white-color);
+    width: 320px;
+    font-size: 1.8rem;
+    color: var(--text-color);
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.attribute_modal_hide {
+    display: none;
+} */
