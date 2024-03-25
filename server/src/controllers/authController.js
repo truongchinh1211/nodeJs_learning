@@ -10,7 +10,7 @@ exports.register = async(req,res)=>{
         if(roleId)
              role = await Role.findById(roleId)
         else
-            role = await Role.findOne({ roleName:'User' })
+            role = await Role.findOne({ roleName:'user' })
         if(!role)
             return res.status(400).json("Invalid role Id")
         const user = await User.findOne({userName})

@@ -27,7 +27,7 @@ const userSchema = new Schema(
         }
     },modelOption
 )
-userSchema.pre('save', async function(next) {
+userSchema.pre('validate', async function(next) {
     const user = this;
     if (!user.isModified('password')) return next();
     try {

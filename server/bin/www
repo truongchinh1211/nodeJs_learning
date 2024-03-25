@@ -2,6 +2,7 @@ const debug = require("debug")("server:server");
 const dotenv = require("dotenv");
 const mongoose = require('mongoose');
 const app = require('../index.js')
+const seeders = require("../src/seeders");
 dotenv.config();
 
 
@@ -49,6 +50,7 @@ mongoose
     app.on("error", onError);
     app.on("listening", onListening);
     console.log("MongoDB connected");
+    // seeders.createAuthSeeder()
   })
   .catch((error) => {
     console.log(process.env.MONGODB_URL)
