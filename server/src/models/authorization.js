@@ -58,6 +58,16 @@ const roleSchema = new Schema (
     },modelOption
 )
 
+roleSchema.pre('findOneAndDelete', async()=>{
+    try{
+        const role = this
+        await Permission.deleteMany({role:role._id})
+        next()
+    }catch(error){
+        next(error)
+    }
+})
+
 const permissionSchema = new Schema(
     {
         role: {

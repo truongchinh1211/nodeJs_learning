@@ -1031,11 +1031,11 @@
                                     <form id="permission_form">
                                         <div class="form-group">
                                             <label for="permission_id">Mã nhóm quyền</label>
-                                            <input class="form-input form-control" type="text" name="id_nhom_quyen" id="permission_id" readonly>
+                                            <input class="form-input form-control" type="text" name="role" id="permission_id" readonly>
                                         </div>
                                         <div class="form-group">
                                             <label for="permission_name">Tên nhóm quyền</label>
-                                            <input class="form-input form-control" type="text" name="ten_nhom_quyen" id="permission_name" required>
+                                            <input class="form-input form-control" type="text" name="roleName" id="permission_name" required>
                                         </div>
                                         <span class="permisson-message" style="color: red; margin-left: 10px;"></span>
                                         <table class="table table-hover">

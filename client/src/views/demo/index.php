@@ -146,7 +146,7 @@
                                     <button type="button" class="btn btn-success"id="info-btn">Xem thông tin cá nhân</button>
                                 </div>
                         <div class="form-group" style="display: inline-block;margin-right:10px">
-                                    <button type="button" class="btn btn-danger">Trang admin</button>
+                                    <button type="button" class="btn btn-danger" id="admin-btn">Trang admin</button>
                                 </div>
                         </div>
                     </div>

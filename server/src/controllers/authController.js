@@ -43,8 +43,10 @@ exports.login = async(req,res) => {
         const token = jwt.sign(
             {
                 id: user._id,
+
             },
             process.env.TOKEN_SECRET_KEY
+            ,{expiresIn:3600}
             )
         user.password = undefined
         return res.status(200).json({
@@ -76,6 +78,7 @@ exports.createRole = async(req,res)=>{
         const { roleName } = req?.body
         if(!roleName)
             return res.status(400).json("Please fill all the required field!")
+        const oldRole = await Role.findOne({roleName})
         const createRole = await Role.create({ roleName })
         return res.status(200).json({
             message: "created role successfully",
@@ -83,9 +86,43 @@ exports.createRole = async(req,res)=>{
         })
     }catch(error){
         if (error.code === 11000) 
-            return res.status(409).json({ message: "Role already exists" })
+            return res.status(409).json({ error: "Role already exists" })
         return res.status(500).json({ error: error });
     }
+}
+exports.updateRole = async(req,res)=>{
+    try{
+        const {roleId} = req.params
+        const { roleName } = req.body
+        if(!roleName)
+            return res.status(400).json({error:"Please fill all the required field!"})
+        const updateRole = await Role.findOneAndUpdate({_id:roleId},{roleName},{new:true})
+        if (!updateRole)
+            return res.status(404).json({ error: "Role not found" });
+        return res.status(200).json({
+            message: "updated role successfully",
+            data: updateRole
+        })
+    }catch(error){
+        if (error.code === 11000) 
+            return res.status(409).json({ error: "Role name already exists" })
+        return res.status(500).json({ error: error.message });
+    }
+}
+exports.deleteRole = async(req,res)=>{
+    try{
+        const roleId = req.params.roleId
+        if(!roleId)
+            return res.status(400).json({error:"Please fill all the required field!"})
+        console.log(roleId)
+        const deleteResult = await Role.findOneAndDelete({ _id: roleId });
+        if (!deleteResult) {
+            return res.status(404).json({ error: "Role not found or already deleted." });
+        }
+        return res.status(200).json({ message: "Delete role successfully." });
+    }catch(error){
+            return res.status(500).json({ error: error.message });
+    }  
 }
 exports.getUserInfo = async(req,res)=>{
     try{

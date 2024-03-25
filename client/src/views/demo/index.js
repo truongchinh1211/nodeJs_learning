@@ -18,7 +18,10 @@ function renderInfo(user) {
     $("#fullName").val(user.fullName);
     $("#userName").val(user.userName);
 }
-
+$("#admin-btn").click(function (e) { 
+    e.preventDefault();
+    window.location.href = './admin_page.php'
+});
 
 
 $("#logout-btn").click(function (e) { 

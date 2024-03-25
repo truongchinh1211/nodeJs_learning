@@ -1,25 +1,50 @@
 document.addEventListener("DOMContentLoaded", function() {
-
-    const user = JSON.parse(localStorage.getItem("user"));
-    const jwtToken = localStorage.getItem("jwtToken");
-
-    if (user && jwtToken) {
-        var newElement = document.createElement("li");
-newElement.innerHTML = `<a href="#"><span class="glyphicon glyphicon-user"></span> ${user.userName}</a>`;
-
-var parentElement = document.getElementById("login-check");
-var firstChild = parentElement.firstChild;
-
-
-parentElement.insertBefore(newElement, firstChild);
-        return;
-    } else {
-        alert("please login before vô web này")
-        window.location.replace("../auth/login.php");
-    }
+    authorize()
+    
 });
+window.onpopstate = function(event) {
+    // Xử lý hành động "go back" hoặc "go forward"
+    // Sau đó, buộc trang tải lại từ máy chủ
+    window.location.reload(true);
+};
+const authorize = ()=>{
+    const user = JSON.parse(localStorage.getItem("user"));
+    token = localStorage.getItem('jwtToken');
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+    };
+    fetch('http://localhost:3000/auth/check-token', {
+                    method: 'GET',
+                    headers: headers,
+                }).then(response => {
+                    if(!response.ok)
+                        return response.json().then(data =>{throw new Error(data.error)})
+                    return response.json()
+            })
+                .then(data => {
+                    if(data.error)
+                        throw new Error(data.error)
+                    localStorage.setItem('user',JSON.stringify(data))
+                    var newElement = document.createElement("li");
+                    newElement.innerHTML = `<a href="#"><span class="glyphicon glyphicon-user"></span> ${user.userName}</a>`;
+                    var parentElement = document.getElementById("login-check");
+                    var firstChild = parentElement.firstChild;
+                    parentElement.insertBefore(newElement, firstChild);
+                })
+                .catch(error => {
+                    console.log(error)
+                    alert("Xác nhận quyền truy cập thất bại, vui lòng đăng nhập để thử lại")
+                    localStorage.removeItem('jwtToken');
+                    localStorage.removeItem('user');
+                    window.location.href = '../auth/login.php'
+                    
+            });
+}
+
 $("#logout-btn").click(function (e) { 
     e.preventDefault();
+    alert("đăng xuất hoy")
     localStorage.removeItem('jwtToken');
     localStorage.removeItem('user');
     window.location.href = '../auth/login.php'
@@ -50,10 +75,10 @@ let permission = {}
 
 function loadTab(tab_id) {
     token = localStorage.getItem('jwtToken');
-        const headers = {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}` 
-        };
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+    };
     switch (tab_id) {
         case 'account':
         fetch('http://localhost:3000/auth/user', {
@@ -61,7 +86,7 @@ function loadTab(tab_id) {
                     headers: headers,
                 }).then(response => {
                     if(!response.ok)
-                        return response.json().then(data =>{throw new Error(data)})
+                        return response.json().then(data =>{throw new Error(data.error)})
                     return response.json()
             })
                 .then(data => {
@@ -86,14 +111,14 @@ function loadTab(tab_id) {
                     headers: headers,
                 }).then(response => {
                     if(!response.ok)
-                        return response.json().then(data =>{throw new Error(data)})
+                        return response.json().then(data =>{throw new Error(data.error)})
                     return response.json()
             })
                 .then(data => {
                     if(data.error)
                         throw new Error(data.error)
                 
-                    loadPermission(data)
+                    loadPermission(data.roles)
                 })
                 .catch(error => {
                     console.log(error)
@@ -132,47 +157,54 @@ function loadTab(tab_id) {
 // });
 
 $(document).ready(function() {
+    token = localStorage.getItem('jwtToken');
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+    };
     const user = JSON.parse(localStorage.getItem('user'))
-
-    $.ajax({
-        type: "GET",
-        url: `http://localhost:3000/permission/permission/${user.role}`,
-        dataType: "json",
-        async: 'false',
-        success: function(response) {
-            response.forEach(item => {
-                permission[item.feature] = {}
-                permission[item.feature]['isRead'] = item.isRead
-                permission[item.feature]['isInsert'] = item.isInsert
-                permission[item.feature]['isUpdate'] = item.isUpdate
-                permission[item.feature]['isDelete'] = item.isDelete
-                console.log(permission)
+    fetch(`http://localhost:3000/permission/permission/${user.role}`, {
+                    method: 'GET',
+                    headers: headers,
+                }).then(response => {
+                    if(!response.ok)
+                        return response.json().then(data =>{throw new Error(data.error)})
+                    return response.json()
             })
-            $.ajax({
-                type: "GET",
-                url: 'http://localhost:3000/permission/feature',
-                dataType: "json",
-                success: function(response) {
-                    loadSideBar(response)
+                .then(data => {
+                    if(data.error)
+                        throw new Error(data.error)
+                    console.log(data)
+                        data.features.forEach(item => {
+                            permission[item.feature] = {}
+                            permission[item.feature]['isRead'] = item.isRead
+                            permission[item.feature]['isInsert'] = item.isInsert
+                            permission[item.feature]['isUpdate'] = item.isUpdate
+                            permission[item.feature]['isDelete'] = item.isDelete
+                })
+                fetch(`http://localhost:3000/permission/feature`, {
+                    method: 'GET',
+                    headers: headers,
+                }).then(response => {
+                    if(!response.ok)
+                        return response.json().then(data =>{throw new Error(data.error)})
+                    return response.json()
+            })
+                .then(data => {
+                    if(data.error)
+                        throw new Error(data.error)
+                    loadSideBar(data)
                     authorizeUser(permission)
-                }
-            });
-        }
-    });
+            }).catch(error => {console.log(error)});
+            }).catch(error => {console.log(error)});
 
-
-
-    loadTab('report')
-    searchProduct()
-    searchVariant()
+    // loadTab('account')
     loadFeatureList()
-    logout()
 });
 
 function authorizeUser(permission) {
     $(".sidebar_menu-items").each(function(index, element) {
         const id_chuc_nang = $(this).data('id-chuc-nang');
-        console.log(permission[id_chuc_nang])
         let is_read
         if (id_chuc_nang == 0) is_read = 1
         else is_read = permission[id_chuc_nang]['isRead']
@@ -1365,41 +1397,53 @@ $('#attribute_delete_confirm_btn').click(function(e) {
 
 // FEATURE TAB //
 function loadFeatureList() {
-    $.ajax({
-        type: "GET",
-        url: 'http://localhost:3000/permission/feature',
-        dataType: "json",
-        success: function(response) {
-            response.forEach(item => {
-                str = `
-                <tr data-id="${item._id}">
-                    <td>${item.featureName}</td>
-                    <td><label class="switch">
-                        <input type="checkbox" class="permisson-checkbox" data-type="is_insert">
-                        <span class="slider round"></span>
-                    </label></td>
-                    <td><label class="switch">
-                        <input type="checkbox" class="permisson-checkbox" data-type="is_update">
-                        <span class="slider round"></span>
-                    </label></td>
-                    <td><label class="switch">
-                        <input type="checkbox" class="permisson-checkbox" data-type="is_delete">
-                        <span class="slider round"></span>
-                        </label></td>
-                    <td><label class="switch">
-                        <input type="checkbox" class="permisson-checkbox" data-type="is_read">
-                        <span class="slider round"></span>
-                    </label></td>
-                </tr>
-                `
-                $('#permission_feature_detail').append(str);
+    token = localStorage.getItem('jwtToken');
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+    };
+    fetch(`http://localhost:3000/permission/feature`, {
+                    method: 'GET',
+                    headers: headers,
+                }).then(response => {
+                    if(!response.ok)
+                        return response.json().then(data =>{throw new Error(data.error)})
+                    return response.json()
             })
-        }
-    });
+                .then(data => {
+                    if(data.error)
+                        throw new Error(data.error)
+                    data.forEach(item => {
+                        str = `
+                        <tr data-id="${item._id}">
+                            <td>${item.featureName}</td>
+                            <td><label class="switch">
+                                <input type="checkbox" class="permisson-checkbox" data-type="isInsert">
+                                <span class="slider round"></span>
+                            </label></td>
+                            <td><label class="switch">
+                                <input type="checkbox" class="permisson-checkbox" data-type="isUpdate">
+                                <span class="slider round"></span>
+                            </label></td>
+                            <td><label class="switch">
+                                <input type="checkbox" class="permisson-checkbox" data-type="isDelete">
+                                <span class="slider round"></span>
+                                </label></td>
+                            <td><label class="switch">
+                                <input type="checkbox" class="permisson-checkbox" data-type="isRead">
+                                <span class="slider round"></span>
+                            </label></td>
+                        </tr>
+                        `
+                        $('#permission_feature_detail').append(str);
+                    })
+            }).catch(error => {console.log(error)});
+
 }
 
 function loadPermission(permissions) {
     $(".permission_list").html("")
+    
     permissions.forEach(item => {
         let str = `
         <tr class="permission_list_content" data-id="${item._id}">
@@ -1450,27 +1494,36 @@ function loadPermission(permissions) {
 }
 
 function loadPermissionDetail(permission_id, permission_name) {
+    token = localStorage.getItem('jwtToken');
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` 
+        };
     $('#permission_id').val(permission_id);
     $('#permission_name').val(permission_name);
     if ([1, 2].includes(permission_id)) {
         $('#permission_confirm_btn').prop('disabled', true)
     } else $('#permission_confirm_btn').prop('disabled', false)
-    $.ajax({
-        type: "GET",
-        url: '../../../main/controller/api/permissionAPI.php',
-        data: `id=${permission_id}`,
-        dataType: "json",
-        success: function(response) {
-            response.forEach(item => {
-                $(`#permission_feature_detail [data-id="${item.id_chuc_nang}"]`).find('input').each(function(index, element) {
-                    $(element).prop('checked', item[`${$(element).data('type')}`] == 1 ? true : false);
-                });
+    fetch(`http://localhost:3000/permission/permission/${permission_id}`, {
+                    method: 'GET',
+                    headers: headers,
+                }).then(response => {
+                    if(!response.ok)
+                        return response.json().then(data =>{throw new Error(data.error)})
+                    return response.json()
+            }).then(data => {
+                if(data.error)
+                    throw new Error(data.error)
+                data.features.forEach(item => {
+                    $(`#permission_feature_detail [data-id="${item.feature}"]`).find('input').each(function(index, element) {
+                        const dataType = $(element).data('type');
+                        $(element).prop('checked', !!item[dataType]);
+                    });
+                })
             })
-        },
-        error: function(jqXHR, exception) {
-            clearFeatureCheckBoxs()
-        }
-    });
+            .catch(error => {console.log(error)
+                clearFeatureCheckBoxs()});
+    
 }
 
 function clearFeatureCheckBoxs() {
@@ -1488,7 +1541,8 @@ function clearPermissionForm() {
 
 $('#permission_add_btn').click(function(e) {
     const active_feature = $('.sidebar_menu-items.active').data('id-chuc-nang');
-    if (permission[active_feature]['is_insert'] == 1) {
+    console.log(permission[active_feature])
+    if (permission[active_feature]['isInsert'] == 1) {
         clearPermissionForm()
         $('.modal-title-permission').text('Thêm nhóm quyền')
         $('#permission_id').val('auto')
@@ -1507,7 +1561,7 @@ $('#permission_add_btn').click(function(e) {
 $('#permission_form').submit(function(e) {
     e.preventDefault();
     const active_feature = $('.sidebar_menu-items.active').data('id-chuc-nang');
-    if (permission[active_feature]['is_update'] == 0) {
+    if (permission[active_feature]['isUpdate'] == 0) {
         toast({
             title: "Hạn chế",
             message: "Bạn không có quyền hạn để sử dụng hành động này",
@@ -1517,63 +1571,99 @@ $('#permission_form').submit(function(e) {
         return false
     }
     if (validatePermissionForm()) {
-        let data = {}
+        let roleData={}
+        let permissionData = {}
         $.each($(this).serializeArray(), function(i, el) {
-            data["" + el.name + ""] = el.value
+            roleData["" + el.name + ""] = el.value
         })
-        data['id_chuc_nang'] = []
-        data['is_read'] = []
-        data['is_insert'] = []
-        data['is_update'] = []
-        data['is_delete'] = []
+        permissionData['features'] = [];
         $('#permission_feature_detail tr').each(function(index, element) {
-            data['id_chuc_nang'].push($(element).data('id'))
+            let featureObj = {};
+            featureObj['feature'] = $(element).data('id');
             $(element).find('input').each(function(i, e) {
-                data[`${$(e).data('type')}`].push($(e).is(':checked') ? 1 : 0)
-            })
+                featureObj[`${$(e).data('type')}`] = $(e).is(':checked') ? 1 : 0;
+            });
+            permissionData['features'].push(featureObj);
         });
-        let method, permission_id, url, message
+        token = localStorage.getItem('jwtToken');
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` 
+        };
+        let method, role_id, roleUrl, message,permissionUrl
         switch ($('#permission_modal').attr('data-action')) {
             case 'add':
                 method = 'POST'
-                url = '../../../main/controller/api/permissionAPI.php'
+                roleUrl = 'http://localhost:3000/auth/role'
+                permissionUrl = 'http://localhost:3000/permission/permission'
                 message = 'Đã thêm nhóm quyền mới'
                 break;
             case 'update':
                 method = 'PUT'
-                permission_id = $('#permission_id').val()
-                url = `../../../main/controller/api/permissionAPI.php?id=${permission_id}`
+                role_id = $('#permission_id').val()
+                roleUrl = `http://localhost:3000/auth/role/${role_id}`
+                permissionUrl = `http://localhost:3000/permission/permission/${role_id}`
                 message = 'Đã cập nhật thay đổi'
                 break;
             default:
                 break;
         }
-    
-        $.ajax({
-            type: method,
-            url: url,
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-            success: function(response) {
-                loadTab('permission')
-                $('#permission_modal').modal('hide')
-                toast({
-                    title: "Thành công!",
-                    message: message,
-                    type: "success",
-                    duration: 4000
-                });
-            },
-            error: function(jqXHR, exception) {
-                $('#permission_modal').modal('hide')
-                toast({
-                    title: "Thất bại!",
-                    message: "Đã có lỗi xảy ra (" + exception + ")",
-                    type: "error",
-                    duration: 4000
-                });
-            }
-        });
+        fetch(roleUrl, {
+                    method: method,
+                    headers: headers,
+                    body: JSON.stringify(roleData)
+                }).then(response => {
+                    if(!response.ok)
+                        return response.json().then(data =>{throw new Error(data.error)})
+                    return response.json()
+            })
+                .then(data => {
+                    if(data.error)
+                        throw new Error(data.error)
+                    permissionData['role']=data.data._id
+                    fetch(permissionUrl, {
+                        method: method,
+                        headers: headers,
+                        body: JSON.stringify(permissionData)
+                    }).then(response => {
+                        if(!response.ok)
+                            return response.json().then(data =>{throw new Error(data.error)})
+                        return response.json()
+                })
+                    .then(data => {
+                        if(data.error)
+                            throw new Error(data.error)
+                        loadTab('permission')
+                        $('#permission_modal').modal('hide')
+                        toast({
+                            title: "Thành công!",
+                            message: message,
+                            type: "success",
+                            duration: 4000
+                        });
+                    })
+                    .catch(error => {
+                        console.log(error)
+                        toast({
+                            title: "Thất bại!",
+                            message: "Đã có lỗi xảy ra (" + error + ")",
+                            type: "error",
+                            duration: 4000
+                        });
+                        return;
+                }); 
+                })
+                .catch(error => {
+                    console.log(error)
+                    toast({
+                        title: "Thất bại!",
+                        message: "Đã có lỗi xảy ra (" + error + ")",
+                        type: "error",
+                        duration: 4000
+                    });
+                    
+            });
+   
     }
 });
 
@@ -1592,7 +1682,7 @@ function validatePermissionForm() {
 $('#permission_delete_confirm_btn').click(function(e) {
     e.preventDefault();
     const active_feature = $('.sidebar_menu-items.active').data('id-chuc-nang');
-    if (permission[active_feature]['is_delete'] == 0) {
+    if (permission[active_feature]['isDelete'] == 0) {
         toast({
             title: "Hạn chế",
             message: "Bạn không có quyền hạn để sử dụng hành động này",
@@ -1601,11 +1691,24 @@ $('#permission_delete_confirm_btn').click(function(e) {
         });
         return false
     }
-    const permission_id = $(this).closest('form').find('#permission_delete_id').val()
-    $.ajax({
-        type: "DELETE",
-        url: `../../../main/controller/api/permissionAPI.php?id=${permission_id}`,
-        success: function(response) {
+    token = localStorage.getItem('jwtToken');
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` 
+        };
+    const role_id = $(this).closest('form').find('#permission_delete_id').val()
+    fetch(`http://localhost:3000/auth/role/${role_id}`, {
+        method: 'DELETE',
+        headers: headers,
+        }).then(response => {
+            if(!response.ok)
+                return response.json().then(data =>{throw new Error(data.error)})
+            return response.json()
+        })
+        .then(data => {
+            console.log(data)
+            if(data.error)
+                throw new Error(data.error)
             loadTab('permission')
             $('#permission_delete_modal').modal('hide')
             toast({
@@ -1614,17 +1717,17 @@ $('#permission_delete_confirm_btn').click(function(e) {
                 type: "success",
                 duration: 4000
             });
-        },
-        error: function(jqXHR, exception) {
-            $('#permission_delete_modal').modal('hide')
+        })
+        .catch(error => {
+            console.log(error)
             toast({
                 title: "Thất bại!",
-                message: "Đã có lỗi xảy ra (" + exception + ")",
+                message: "Đã có lỗi xảy ra (" + error + ")",
                 type: "error",
                 duration: 4000
             });
-        }
     });
+    
 });
 
 function logout() {
