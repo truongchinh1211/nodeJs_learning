@@ -28,7 +28,6 @@ exports.createPermission = async (req, res) => {
         if (!role || !features) {
             return res.status(400).json({error:'fill all the field'});
         }
-        console.log(features)
         const createdPermission = await Permission.create({
             role: role,
             features: features
@@ -64,7 +63,6 @@ exports.getPermissions = async(req,res)=>{
     try{
     const roleId = req.params.roleId;
     const permissions = await Permission.findOne({role:roleId})
-    console.log(permissions)
     return res.status(200).json(permissions);
     }catch(error){
         return res.status(500).json({error:error.mesage});

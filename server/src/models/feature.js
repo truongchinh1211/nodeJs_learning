@@ -4,11 +4,13 @@ module.exports = mongoose.model('Feature', new Schema(
     {
     featureName: {
         type: String,
-        required: true
+        required: true,
+        unique:true
     },
     code: {
         type: String,
-        required: true
+        required: true,
+        unique:true
     },
     icon: {
         type: String,

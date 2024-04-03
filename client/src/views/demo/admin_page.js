@@ -92,7 +92,7 @@ function loadTab(tab_id) {
                 .then(data => {
                     if(data.error)
                         throw new Error(data.error)
-                   
+                   loadAccounts(data)
                 })
                 .catch(error => {
                     console.log(error)
@@ -1967,10 +1967,10 @@ function loadAccounts(accounts) {
     let str = ""
     accounts.forEach((item) => {
         str += `
-            <tr data-account-id="${item.id}">
-                <td>${item.ten_tk}</td>
+            <tr data-account-id="${item._id}">
+                <td>${item.userName}</td>
                 <td>${item.email}</td>
-                <td>${item.ten_nhom_quyen}</td>
+                <td>${item.role.roleName}</td>
                 `
         if (item.id_nhom_quyen != 2)
             str += `        <td>
@@ -2027,7 +2027,7 @@ function loadAccounts(accounts) {
 $("#account_delete_form").submit(function(e) {
     e.preventDefault()
     const active_feature = $('.sidebar_menu-items.active').data('id-chuc-nang');
-    if (permission[active_feature]['is_delete'] == 0) {
+    if (permission[active_feature]['isDelete'] == 0) {
         toast({
             title: "Hạn chế",
             message: "Bạn không có quyền hạn để sử dụng hành động này",
@@ -2068,7 +2068,7 @@ $("#account_delete_form").submit(function(e) {
 $('#account_add_btn').click(function(e) {
     e.preventDefault();
     const active_feature = $('.sidebar_menu-items.active').data('id-chuc-nang')
-    if (permission[active_feature]['is_insert'] == 1) {
+    if (permission[active_feature]['isInsert'] == 1) {
         $(".modal-title-account").text("Thêm tài khoản");
         clearAccountForm();
         $('#account_modal').attr('data-action', 'add');
@@ -2085,45 +2085,98 @@ $('#account_add_btn').click(function(e) {
 })
 
 function loadAccountDetail(account_id) {
-    $.ajax({
-        type: "GET",
-        url: "../../../main/controller/api/accountAPI.php",
-        data: `id=${account_id}`,
-        dataType: "json",
-        contentType: false,
-        success: function(response) {
-            getAllRoles(response.id_nhom_quyen);
-            $("#account_username").val(response.ten_tk);
-            $("#account_email").val(response.email);
-            $("#account_id").val(account_id);
-            $("#account_pass").val(response.password);
-            if (response.status == 1)
-                $("#account_status").prop('checked', true);
-            else $("#account_status").prop('checked', false);
-        }
-    });
+    token = localStorage.getItem('jwtToken');
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+    };
+    fetch(`http://localhost:3000/auth/user/${account_id}`, {
+                method: 'GET',
+                headers: headers,
+            }).then(response => {
+                if(!response.ok)
+                    return response.json().then(data =>{throw new Error(data.error)})
+                return response.json()
+        })
+            .then(data => {
+                if(data.error)
+                    throw new Error(data.error)
+                console.log(data)
+                getAllRoles(data.role._id);
+                $("#account_username").val(data.userName);
+                $("#account_fullname").val(data.fullName);
+                $("#account_email").val(data.email);
+                $("#account_id").val(account_id);
+                $("#account_pass").val('');
+            })
+            .catch(error => {
+                console.log(error)
+                toast({
+                    title: "Thất bại!",
+                    message: "Đã có lỗi xảy ra (" + error + ")",
+                    type: "error",
+                    duration: 4000
+                });
+        });
+    // $.ajax({
+    //     type: "GET",
+    //     url: "../../../main/controller/api/accountAPI.php",
+    //     data: `id=${account_id}`,
+    //     dataType: "json",
+    //     contentType: false,
+    //     success: function(response) {
+    //         getAllRoles(response.id_nhom_quyen);
+    //         $("#account_username").val(response.ten_tk);
+    //         $("#account_email").val(response.email);
+    //         $("#account_id").val(account_id);
+    //         $("#account_pass").val(response.password);
+    //         if (response.status == 1)
+    //             $("#account_status").prop('checked', true);
+    //         else $("#account_status").prop('checked', false);
+    //     }
+    // });
 
 }
 
 function getAllRoles(selected_value) {
-    let str = "";
-    $.get("../../../main/controller/api/permissionAPI.php",
-        function(data, textStatus, jqXHR) {
-            let str = "";
-            data.forEach(item => {
-                str += `<option value="${item._id}">${item.roleName}</option>`
+    token = localStorage.getItem('jwtToken');
+    const headers = {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` 
+    };
+    fetch('http://localhost:3000/auth/Role', {
+                    method: 'GET',
+                    headers: headers,
+                }).then(response => {
+                    if(!response.ok)
+                        return response.json().then(data =>{throw new Error(data.error)})
+                    return response.json()
             })
-            $("#account_type_selection").html(str);
-            if (selected_value != null)
-                $("#account_type_selection").val(selected_value).change();
-        },
-
-    );
+                .then(data => {
+                    if(data.error)
+                        throw new Error(data.error)
+                    let str = "";
+                    data.roles.forEach(item => {
+                        str += `<option value="${item._id}">${item.roleName}</option>`
+                    })
+                    $("#account_type_selection").html(str);
+                    if (selected_value != null)
+                        $("#account_type_selection").val(selected_value).change();
+                })
+                .catch(error => {
+                    console.log(error)
+                    toast({
+                        title: "Thất bại!",
+                        message: "Đã có lỗi xảy ra (" + error + ")",
+                        type: "error",
+                        duration: 4000
+                    });
+            });
 }
 $(".account_modal_form").submit(function(e) {
     e.preventDefault()
     const active_feature = $('.sidebar_menu-items.active').data('id-chuc-nang');
-    if (permission[active_feature]['is_update'] == 0) {
+    if (permission[active_feature]['isUpdate'] == 0) {
         toast({
             title: "Hạn chế",
             message: "Bạn không có quyền hạn để sử dụng hành động này",
@@ -2132,60 +2185,68 @@ $(".account_modal_form").submit(function(e) {
         });
         return false
     }
-    console.log($(this))
     if (validateAccountForm()) {
         let data = {}
         let formData = $(this).serializeArray()
         $.each(formData, function(i, e) {
             data["" + e.name + ""] = e.value
         });
-        if ($("#account_status").prop('checked'))
-            data["status"] = 1
-        else data["status"] = 0
-        let account_Id, url, message, request
+        let account_Id, url, message, method
 
         switch ($('#account_modal').attr('data-action')) {
             case 'add':
-                request = "POST"
-                url = "../../../main/controller/api/accountAPI.php?action=create"
+                method = "POST"
+                url = `http://localhost:3000/auth/user`
                 message = "Tạo tài khoản thành công"
                 break
             case 'update':
-                request = "PUT"
+                method = "PUT"
                 account_Id = $("#account_id").val()
-                url = `../../../main/controller/api/accountAPI.php?id=${account_Id}`
+                console.log(account_Id)
+                url = `http://localhost:3000/auth/user/${account_Id}`
+                console.log(url)
                 message = "Cập nhật tài khoản thành công"
+                delete data['password']
                 break
             default:
                 break
         }
-        $.ajax({
-            type: request,
-            url: url,
-            data: JSON.stringify(data),
-            processData: false,
-            contentType: false,
-            dataType: "json",
-            success: function(response) {
-                loadTab('account')
-                $('#account_modal').modal('hide')
-                toast({
-                    title: "Thành công!",
-                    message: message,
-                    type: "success",
-                    duration: 4000
-                });
-            },
-            error: function(jqXHR, exception) {
-                $('#account_modal').modal('hide')
-                toast({
-                    title: "Thất bại!",
-                    message: "Đã có lỗi xảy ra (" + exception + ")",
-                    type: "erorr",
-                    duration: 4000
-                });
-            }
-        });
+        token = localStorage.getItem('jwtToken');
+        const headers = {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` 
+        };
+        fetch(url, {
+            method: method,
+            headers: headers,
+            body: JSON.stringify(data)
+        }).then(response => {
+            if(!response.ok)
+                return response.json().then(data =>{throw new Error(data.error)})
+            return response.json()
+    })
+        .then(data => {
+            if(data.error)
+                throw new Error(data.error)
+            loadTab('account')
+            $('#account_modal').modal('hide')
+            toast({
+                title: "Thành công!",
+                message: message,
+                type: "success",
+                duration: 4000
+            });
+        })
+        .catch(error => {
+            console.log(error)
+            toast({
+                title: "Thất bại!",
+                message: "Đã có lỗi xảy ra (" + error + ")",
+                type: "error",
+                duration: 4000
+            });
+            
+    });
     }
 });
 
@@ -2204,10 +2265,10 @@ function validateAccountForm() {
         $('label[for="account_email"] span').text("(*) Vui lòng nhập đúng định dạng");
         flag = false;
     }
-    if (pass.length < 6) {
-        $('label[for="account_pass"] span').text("(*) Vui lòng nhập tối thiểu 6 ký tự");
-        flag = false;
-    }
+    // if (pass.length < 6) {
+    //     $('label[for="account_pass"] span').text("(*) Vui lòng nhập tối thiểu 6 ký tự");
+    //     flag = false;
+    // }
     return flag;
 }
 

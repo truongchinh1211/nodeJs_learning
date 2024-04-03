@@ -45,17 +45,19 @@ const createSeeder = async () => {
         const roles = await Role.insertMany(roleSeedData);
         const permissions = [];
         roles.forEach(role => {
+            const roleFeatures = []
             features.forEach(feature => {
-                permissions.push({
-                    role: role._id,
-                    features: [{
+                roleFeatures.push({
                         feature: feature._id,
                         isRead: true,
                         isInsert: true,
                         isUpdate: true,
                         isDelete: true
-                    }]
                 });
+            });
+            permissions.push({
+                role: role._id,
+                features: roleFeatures
             });
         });
         userSeedData.forEach(user => {

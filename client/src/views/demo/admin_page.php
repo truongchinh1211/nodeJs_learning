@@ -486,7 +486,11 @@
                                             <div class="form-group">
                                                 <input type="hidden" id="account_id">
                                                 <label class="form-label" for="account_name">Tên tài khoản <span style="color: red;">(*)</span></label>
-                                                <input class="form-input form-control" name="username" type="text" id="account_username" required>
+                                                <input class="form-input form-control" name="userName" type="text" id="account_username" required>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="form-label" for="account_email">Họ tên <span style="color: red;">(*)</span></label>
+                                                <input class="form-input form-control" name="fullName" type="text" id="account_fullname" required>
                                             </div>
                                             <div class="form-group">
                                                 <label class="form-label" for="account_email">Email <span style="color: red;">(*)</span></label>
@@ -494,11 +498,11 @@
                                             </div>
                                             <div class="form-group">
                                                 <label class="form-label" for="account_pass">Mật khẩu <span style="color: red;">(*)</span></label>
-                                                <input class="form-input form-control" name="password" type="text" id="account_pass" required>
+                                                <input class="form-input form-control" name="password" type="text" id="account_pass">
                                             </div>
                                             <div class="form-group">
                                                 <label class="form-label" for="account_type_selection">Loại tài khoản <span style="color: red;">(*)</span></label>
-                                                <select id="account_type_selection" name="id_nhom_quyen" class="form-control">
+                                                <select id="account_type_selection" name="role" class="form-control">
                                                     <option value="0" selected>Khách hàng</option>
                                                     <option value="1">Quản trị</option>
                                                 </select>

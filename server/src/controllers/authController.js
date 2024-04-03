@@ -1,7 +1,7 @@
 const { User, Role, Permission } = require('../models')
 const jwt = require("jsonwebtoken");
 
-exports.register = async(req,res)=>{
+exports.createUser = async(req,res)=>{
     try{
         const {fullName, userName, password, email,roleId} = req?.body
         if(!fullName || !userName || !password || !email)
@@ -10,13 +10,12 @@ exports.register = async(req,res)=>{
         if(roleId)
              role = await Role.findById(roleId)
         else
-            role = await Role.findOne({ roleName:'user' })
+            role = await Role.findOne({ roleName:'User' })
         if(!role)
             return res.status(400).json("Invalid role Id")
         const user = await User.findOne({userName})
         if(user)
             return res.status(400).json("username exist" )
-        console.log(role._id)
         const createdUser = await User.create({fullName,userName, password, email, role: role._id})
         return res.status(200).json({
             message: 'create user successfully',
@@ -135,7 +134,16 @@ exports.getUserInfo = async(req,res)=>{
 }
 exports.getUsers= async(req,res)=>{
     try{
-        const users = await User.find()
+        const users = await User.find().populate('role')
+        return res.status(200).json(users)
+    }catch(error){
+        return res.status(500).json({ error: error });
+    }
+}
+exports.getUser= async(req,res)=>{
+    try{
+        const userId = req.params.userId
+        const users = await User.findOne({_id:userId}).populate('role')
         return res.status(200).json(users)
     }catch(error){
         return res.status(500).json({ error: error });
